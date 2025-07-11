@@ -6,10 +6,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table (name = "users")
@@ -17,7 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -36,6 +37,7 @@ public class User {
     @NotBlank
     @Size(min = 8, max = 100, message = "Password length must be 8-100 characters")
     private String password;
+
 
     @Builder.Default // sans cette  Lombok ignore l'initialisation = new HashSet<>() lors de l'utilisation du pattern Builder, ce qui pourrait causer des NullPointerException.
     // Nécessaire pour toutes les collections/champs initialisés quand on utilise @Builder
@@ -60,4 +62,15 @@ public class User {
         role.getUsers().remove(this);
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .toList(); // Utilisation de Stream API pour transformer les rôles en autorités
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 }
