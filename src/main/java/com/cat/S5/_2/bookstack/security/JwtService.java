@@ -1,9 +1,8 @@
 package com.cat.S5._2.bookstack.security;
 
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.cat.S5._2.bookstack.security.exceptions.*;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
@@ -67,12 +66,24 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token){
-        return Jwts
-                .parser()
-                .verifyWith(getSignInKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            return Jwts
+                    .parser()
+                    .verifyWith(getSignInKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException("Token expired at " + e.getClaims().getExpiration(), e);
+        } catch (MalformedJwtException | IllegalArgumentException e) {
+            throw new TokenMalformedJwtException(e);
+        } catch (UnsupportedJwtException e){
+            throw new TokenUnsupportedException(e);
+        } catch (SecurityException e) {
+            throw new TokenSignatureException(e);
+        } catch (JwtException e) {
+            throw new JwtExceptions("JWT processing failed", e);
+        }
     }
 
     private SecretKey getSignInKey() {
