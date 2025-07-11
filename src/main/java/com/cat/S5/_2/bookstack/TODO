@@ -1,0 +1,5 @@
+POUR LE TOKEN : Changer SECRET_KEY par une clé sécurisée
+                configurer votre UserDetailsService
+                Adapter les durées de validité des tokens selon vos besoins
+
+
