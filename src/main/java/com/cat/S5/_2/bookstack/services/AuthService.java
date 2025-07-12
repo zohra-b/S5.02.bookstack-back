@@ -28,7 +28,7 @@ public class AuthService {
 
     public String register(RegisterRequest registerRequest) {
         if (userRepo.existsByEmail(registerRequest.getEmail())) {
-            throw new EmailAlreadyExistsException("Email already exists");
+            throw new EmailAlreadyExistsException(registerRequest.getEmail());
         }
 
         User user = User.builder()

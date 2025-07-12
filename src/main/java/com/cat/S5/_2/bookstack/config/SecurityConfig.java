@@ -13,13 +13,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity //remplace la configuration par défaut de Spring Security
 public class SecurityConfig {
-    private final JwtAuthFilter jwtAuthFilter;
+  private final JwtAuthFilter jwtAuthFilter;
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
 
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity
-                .authorizeHttpRequests(auth -> auth
+                .authorizeHttpRequests(auth -> auth         //L'ordre est important (du plus spécifique au plus général).
                                 .requestMatchers("/api/books").permitAll()
                                 .requestMatchers("api/users/**").hasRole("ADMIN")
                                 .anyRequest().authenticated() //Toutes les autres routes nécessitent une authentification
@@ -28,6 +31,7 @@ public class SecurityConfig {
                                                                         // desactive le Cross-Site Request Forgery de Spring qui oblige à creer un token
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return httpSecurity.build();
     }
