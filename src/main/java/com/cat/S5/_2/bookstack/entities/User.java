@@ -73,4 +73,16 @@ public class User implements UserDetails {
     public String getUsername() {
         return this.email;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User other)) return false;
+        return Objects.equals(email, other.email);   // ou id si déjà présent
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
+    }
 }
