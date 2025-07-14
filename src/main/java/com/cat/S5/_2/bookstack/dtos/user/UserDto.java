@@ -6,7 +6,7 @@ import java.util.Set;
 
 @Builder
 public record UserDto(
-        Long id,
-        String username,
+        Long userId,
+        String userName,
         String email,
         Set<String> roles) {}
