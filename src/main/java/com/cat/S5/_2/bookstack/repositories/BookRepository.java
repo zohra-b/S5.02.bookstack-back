@@ -11,8 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findByTitleContainingIgnoreCase(String title);
     List<Book> findByAuthorContainingIgnoreCase(String author);
-    List<Book> findByStatus(BookStatus status);
-    Optional<Book> findByIsbn(String isbn);
+   Optional<Book> findByIsbn(String isbn);
     List<Book> findByPublicationYear(Integer year);
     List<Book> findByTitleStartingWithIgnoreCase(String prefix);
 

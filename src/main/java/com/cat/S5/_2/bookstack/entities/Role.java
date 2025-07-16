@@ -2,14 +2,16 @@ package com.cat.S5._2.bookstack.entities;
 
 import com.cat.S5._2.bookstack.enums.UserRole;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Getter @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // identity et pas auto car meilleure compatibilité avec mysql notamment pour INSERT

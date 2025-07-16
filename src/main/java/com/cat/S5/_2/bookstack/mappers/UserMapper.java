@@ -1,6 +1,7 @@
 package com.cat.S5._2.bookstack.mappers;
 
 import com.cat.S5._2.bookstack.dtos.user.UserDto;
+import com.cat.S5._2.bookstack.entities.Role;
 import com.cat.S5._2.bookstack.entities.User;
 import com.cat.S5._2.bookstack.enums.UserRole;
 
@@ -21,23 +22,27 @@ public interface UserMapper {
     User toEntity(UserDto userDto);
 
     //HELPERS
-    default Set<String> toRoleNames(Set<UserRole> roles) {
+    default Set<String> toRoleNames(Set<Role> roles) {
         if (roles == null) {
             return Set.of();
         }
         return roles.stream()
-                .map(Enum::name)
+                .map(role -> role.getName().name())
                 .collect(Collectors.toSet());
     }
 
 
-    default Set<UserRole> mapUserDtoRolesToUserRoles(Set<String> roleNames){
+    default Set<Role> toRoleEntities(Set<String> roleNames){
         if (roleNames == null){
             return Set.of();
         }
 
         return roleNames.stream()
-                .map(UserRole::valueOf)
+                .map(roleName -> Role.builder()
+                        .id(null)  //
+                        .name(UserRole.valueOf(roleName))
+                        .users(Set.of())
+                        .build())
                 .collect(Collectors.toSet());
     }
 
