@@ -1,0 +1,18 @@
+--------------------------USER-----------------------------------------
++++ REGISTER +++
+curl -X POST http://localhost:8080/api/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{
+           "userName": "Zohra",
+           "email":    "zohra@example.com",
+           "password": "Secret123!"
+         }'
+
++++ LOGIN +++
+curl -X POST http://localhost:8080/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{
+            "email":    "zohra@example.com",
+            "password": "Secret123!"
+          }'
+
