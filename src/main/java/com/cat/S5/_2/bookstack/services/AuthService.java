@@ -32,9 +32,9 @@ public class AuthService {
         }
 
         User user = User.builder()
+                .userName(registerRequest.getUserName())
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
-                .userName(registerRequest.getUserName())
                 .build();
 
         userRepo.save(user);

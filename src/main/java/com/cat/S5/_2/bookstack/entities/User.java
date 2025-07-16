@@ -62,6 +62,10 @@ public class User implements UserDetails {
         role.getUsers().remove(this);
     }
 
+    public Long getId() {  // (dans updatePassword : #id == principal : fait appel à une methode getId pour avoir l'id)
+        return this.userId;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
