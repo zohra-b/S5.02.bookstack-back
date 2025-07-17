@@ -18,5 +18,5 @@ public interface UserBookMapper {
 
 
     UserBookDto toDto(UserBook userBook);
-    UserBook toEntity(UserBookDto userBookDto);
+
 }
