@@ -1,10 +1,12 @@
+
+
 --------------------------USER-----------------------------------------
 +++ REGISTER +++
 curl -X POST http://localhost:8080/api/auth/register \
      -H "Content-Type: application/json" \
      -d '{
-           "userName": "Zohra",
-           "email":    "zohra@example.com",
+           "userName": "Romina",
+           "email":    "romina@example.com",
            "password": "Secret123!"
          }'
 
@@ -16,3 +18,40 @@ curl -X POST http://localhost:8080/api/auth/login \
             "password": "Secret123!"
           }'
 
+-------------BOOKS---------------------
+***GENRES
+curl -X POST http://localhost:8080/api/genres \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Philosophy"}'
+***AUTHORS
+curl -X POST http://localhost:8080/api/authors \
+  -H "Content-Type: application/json" \
+  -d '{"firstName": "Antoine", "lastName": "de Saint-Exupery"}'
+***BOOK
+curl -X POST http://localhost:8080/api/books \
+  -H "Content-Type: application/json; charset=utf-8" \
+  --data-binary @- <<EOF
+{
+  "title": "Le Petit Prince",
+  "description": "Un conte poétique et philosophique pour enfants et adultes.",
+  "publicationYear": 1943,
+  "language": "French",
+  "isbn": "9782070408504",
+  "authorIds": [1],
+  "genreIds": [1, 2]
+}
+EOF
+
+curl -X POST "http://localhost:8080/api/books" \
+  -H "Content-Type: application/json; charset=utf-8" \
+  --data-binary @- <<EOF
+{
+  "title": "Le Petit Prince",
+  "description": "Un conte poétique et philosophique pour enfants et adultes.",
+  "publicationYear": 1943,
+  "language": "French",
+  "isbn": "9782070408504",
+  "authorIds": [1],
+  "genreIds": [5, 6]
+}
+EOF
