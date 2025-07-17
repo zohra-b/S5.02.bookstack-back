@@ -30,8 +30,4 @@ public class UserBook {
 
     @Column(length = 1000)
     private String comment;
-
-    private boolean reported;
-    private String reportReason;
-
 }
