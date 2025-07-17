@@ -1,8 +1,6 @@
 package com.cat.S5._2.bookstack.mappers;
 
-import com.cat.S5._2.bookstack.dtos.book.BookCardDto;
-import com.cat.S5._2.bookstack.dtos.book.BookDto;
-import com.cat.S5._2.bookstack.dtos.book.BookSummaryDto;
+import com.cat.S5._2.bookstack.dtos.book.*;
 import com.cat.S5._2.bookstack.entities.Author;
 import com.cat.S5._2.bookstack.entities.Book;
 
@@ -35,6 +33,14 @@ public interface BookMapper {
     List<BookCardDto> toBookCardDto(List<Book> books);
 
     Book toEntity(BookDto bookDto);
+
+    @Mapping(target = "authors", ignore = true)
+    @Mapping(target = "genres", ignore = true)
+    Book toEntity(UpdateBookDto dto);
+
+    @Mapping(target = "authors", ignore = true)
+    @Mapping(target = "genres", ignore = true)
+    Book toEntity(CreateBookDto dto);
 
     // helper
     @Named("authorsToString")

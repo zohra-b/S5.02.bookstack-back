@@ -41,17 +41,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     long countByAuthorName(@Param("keyword") String keyword);
 
 
-    @Query("""
-                SELECT new BookCardDto(
-                    b.bookId,
-                    b.title,
-                    GROUP_CONCAT(CONCAT(a.firstName, ' ', a.lastName)),
-                    b.imageUrl)
-                FROM Book b
-                LEFT JOIN b.authors a
-                GROUP BY b.bookId
-            """)
-    List<BookCardDto> findAllCards();
+    @Query("SELECT DISTINCT b FROM Book b LEFT JOIN FETCH b.authors")
+    List<Book> findAllWithAuthors();
+
 }
 
 //    ***** SAVE *****

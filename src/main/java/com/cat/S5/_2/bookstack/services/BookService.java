@@ -2,6 +2,7 @@ package com.cat.S5._2.bookstack.services;
 
 import com.cat.S5._2.bookstack.dtos.book.BookCardDto;
 import com.cat.S5._2.bookstack.dtos.book.BookDto;
+import com.cat.S5._2.bookstack.dtos.book.CreateBookDto;
 import com.cat.S5._2.bookstack.dtos.book.UpdateBookDto;
 import com.cat.S5._2.bookstack.entities.Author;
 import com.cat.S5._2.bookstack.entities.Book;
@@ -35,7 +36,8 @@ public class BookService {
     }
 
     public List<BookCardDto> getAllBookCards() {
-        return bookRepository.findAllCards();
+        List<Book> books = bookRepository.findAllWithAuthors();
+        return bookMapper.toBookCardDto(books);
     }
 
     public BookDto getBookById(Long id) {
@@ -44,8 +46,20 @@ public class BookService {
         return bookMapper.toBookDto(book);
     }
 
-    public BookDto createBook(BookDto bookDto) {
-        Book book = bookMapper.toEntity(bookDto);
+    public BookDto createBook(CreateBookDto dto) {
+        Book book = new Book();
+        book.setTitle(dto.title());
+        book.setDescription(dto.description());
+        book.setPublicationYear(dto.publicationYear());
+        book.setLanguage(dto.language());
+        book.setImageUrl(dto.imageUrl());
+        book.setIsbn(dto.isbn());
+
+        Set<Author> authors = new HashSet<>(authorRepository.findAllById(dto.authorIds()));
+        Set<Genre> genres = new HashSet<>(genreRepository.findAllById(dto.genreIds()));
+        book.setAuthors(authors);
+        book.setGenres(genres);
+
         book = bookRepository.save(book);
         return bookMapper.toBookDto(book);
     }
@@ -65,7 +79,6 @@ public class BookService {
             Set<Author> authors = new HashSet<>(authorRepository.findAllById(dto.authorIds()));
             existingBook.setAuthors(authors);
         }
-
         if (dto.genreIds() != null) {
             Set<Genre> genres = new HashSet<>(genreRepository.findAllById(dto.genreIds()));
             existingBook.setGenres(genres);
@@ -89,6 +102,13 @@ public class BookService {
     public List<BookDto> searchByAuthorName(String keyword) {
         List<Book> books = bookRepository.searchByAuthorName(keyword);
         return bookMapper.toBookDto(books);
+    }
+
+    public List<BookCardDto> searchBooks(String keyword) {
+        Set<Book> result = new HashSet<>();
+        result.addAll(bookRepository.findByTitleContainingIgnoreCase(keyword));
+        result.addAll(bookRepository.searchByAuthorName(keyword));
+        return bookMapper.toBookCardDto(List.copyOf(result));
     }
 
 

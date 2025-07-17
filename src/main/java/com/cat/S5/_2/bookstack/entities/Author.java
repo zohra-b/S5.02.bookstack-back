@@ -15,6 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class Author {
 
     @Id
@@ -33,8 +34,4 @@ public class Author {
     @ManyToMany(mappedBy = "authors")
     private Set<Book> books = new HashSet<>();
 
-    @Override
-    public String toString() {
-        return firstName + " " + lastName;
-    }
 }
