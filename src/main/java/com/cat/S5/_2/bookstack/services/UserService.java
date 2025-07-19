@@ -4,7 +4,6 @@ import com.cat.S5._2.bookstack.dtos.user.PasswordDto;
 import com.cat.S5._2.bookstack.dtos.user.UpdateUserDto;
 import com.cat.S5._2.bookstack.dtos.user.UserDto;
 import com.cat.S5._2.bookstack.dtos.userbook.UserBookDto;
-import com.cat.S5._2.bookstack.entities.Role;
 import com.cat.S5._2.bookstack.entities.User;
 import com.cat.S5._2.bookstack.enums.UserRole;
 import com.cat.S5._2.bookstack.mappers.UserBookMapper;
@@ -32,7 +31,7 @@ public class UserService implements UserDetailsService {
     private final UserMapper userMapper;
     private final UserBookMapper userBookMapper;
     private final PasswordEncoder passwordEncoder;
-    private final RoleService roleService;
+
 
 
     public List<UserDto> findAll(){
@@ -57,8 +56,8 @@ public class UserService implements UserDetailsService {
         return userMapper.toUserDto(user);
     }
 
-    public List<UserDto> findByRole(UserRole roleName){
-        return userRepo.findByRoles_Name(roleName).stream()
+    public List<UserDto> findByRole(UserRole userRole){
+        return userRepo.findByRole(userRole).stream()
                 .map(userMapper::toUserDto)
                 .toList();
     }
@@ -84,24 +83,16 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void deleteUser(Long id){
-        User usertoDelete =findById(id);
-        userRepo.delete(usertoDelete);
+        User user =findById(id);
+        userRepo.delete(user);
     }
 
     @Transactional
-    public void addRoleToUser(Long id, UserRole userRole){
-        User user = findById(id);
-        Role newRole = roleService.findByName(userRole);
-        user.addRole(newRole);
-        userRepo.save(user);
-    }
-
-    @Transactional
-    public void removeRole(Long id, UserRole userRole){
-        User user = findById(id);
-        Role role = roleService.findByName(userRole);
-        user.removeRole(role);
-        userRepo.save(user);
+    public UserDto toggleUserRole(Long userId) {
+        User user = findById(userId);
+        user.toggleRole();
+        User updatedUser = userRepo.save(user);
+        return userMapper.toUserDto(updatedUser);
     }
 
     public boolean emailExists(String email) {
@@ -116,14 +107,15 @@ public class UserService implements UserDetailsService {
     }
 
 
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
+        List<GrantedAuthority> authorities = List.of(
+                new SimpleGrantedAuthority(user.getRole().name())
+        );
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),

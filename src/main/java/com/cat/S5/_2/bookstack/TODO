@@ -1,6 +1,8 @@
-POUR LE TOKEN : Changer SECRET_KEY par une clé sécurisée
-                configurer votre UserDetailsService
+
+
+                CREER UN SECURITY SERVICE QUI IMPLEMENTE USERDETAILS votre UserDetailsService
                 Adapter les durées de validité des tokens selon vos besoins
+
 
 
  Service API Externe pour récupérer les métadonnées : dans un deuxieme temps
