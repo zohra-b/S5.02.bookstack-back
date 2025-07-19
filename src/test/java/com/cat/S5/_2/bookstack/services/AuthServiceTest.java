@@ -49,7 +49,7 @@ class AuthServiceTest {
                 .thenReturn("mocked_jwt_token");
 
         // Act
-        String token = authService.register(request);
+        String token = authService.register(request).tokenResponse();
 
         // Assert
         assertNotNull(token);
@@ -76,7 +76,7 @@ class AuthServiceTest {
         when(jwtService.generateToken(user)).thenReturn("mocked_jwt_token");
 
         // Act
-        String token = authService.login(request);
+        String token = authService.login(request).tokenResponse();
 
         // Assert
         assertNotNull(token, "Token should not be null");

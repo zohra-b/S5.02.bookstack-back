@@ -1,5 +1,6 @@
 package com.cat.S5._2.bookstack.dtos.user;
 
+import com.cat.S5._2.bookstack.enums.UserRole;
 import lombok.Builder;
 
 import java.util.Set;
@@ -9,4 +10,4 @@ public record UserDto(
         Long userId,
         String userName,
         String email,
-        Set<String> roles) {}
+        UserRole role) {}

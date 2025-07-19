@@ -1,10 +1,8 @@
 package com.cat.S5._2.bookstack.repositories;
 
-import com.cat.S5._2.bookstack.entities.Role;
 import com.cat.S5._2.bookstack.entities.User;
 import com.cat.S5._2.bookstack.enums.UserRole;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,10 +15,10 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
-    List<User> findByRoles_Name(UserRole name);
+    List<User> findByRole(UserRole name);
     //List<User> findByCreatedAtAfter(LocalDate date);
     List<User> findByUserNameContainingIgnoreCase(String keyword);
-    List<User> findByRolesIn(List<Role> roles);
+
 
     @Query("SELECT u FROM User u WHERE u.email LIKE %:email%")
     List<User> searchByEmail(@Param("email") String email);
