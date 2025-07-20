@@ -1,12 +1,12 @@
 -- Disable foreign key checks temporarily to avoid issues with insert order
 SET FOREIGN_KEY_CHECKS = 0;
 
--- Clean up existing data (optional, uncomment if you want to start fresh with books, authors, and genres)
--- TRUNCATE TABLE books;
--- TRUNCATE TABLE authors;
--- TRUNCATE TABLE genres;
--- TRUNCATE TABLE books_genres; -- Assuming a many-to-many join table for books and genres
--- TRUNCATE TABLE books_authors; -- Assuming a many-to-many join table for books and authors
+Clean up existing data --(optional, uncomment if you want to start fresh with books, authors, and genres)
+TRUNCATE TABLE books;
+TRUNCATE TABLE authors;
+TRUNCATE TABLE genres;
+TRUNCATE TABLE books_genres; -- Assuming a many-to-many join table for books and genres
+TRUNCATE TABLE books_authors; -- Assuming a many-to-many join table for books and authors
 
 -- Re-enable foreign key checks if you choose not to truncate
 SET FOREIGN_KEY_CHECKS = 1;

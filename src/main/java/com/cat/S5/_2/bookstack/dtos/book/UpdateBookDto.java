@@ -9,7 +9,7 @@ import java.util.List;
 
 @Builder
 public record UpdateBookDto(
-        @NotBlank
+
         @Size(max = 100)
         String title,
 
@@ -18,7 +18,6 @@ public record UpdateBookDto(
         String language,
         String imageUrl,
 
-        @NotNull
         String isbn,
 
         List<Long> authorIds,

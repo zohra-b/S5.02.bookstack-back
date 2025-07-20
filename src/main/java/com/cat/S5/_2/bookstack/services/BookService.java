@@ -1,13 +1,14 @@
 package com.cat.S5._2.bookstack.services;
 
-import com.cat.S5._2.bookstack.dtos.book.BookCardDto;
-import com.cat.S5._2.bookstack.dtos.book.BookDto;
-import com.cat.S5._2.bookstack.dtos.book.CreateBookDto;
-import com.cat.S5._2.bookstack.dtos.book.UpdateBookDto;
+import com.cat.S5._2.bookstack.dtos.author.AuthorDto;
+import com.cat.S5._2.bookstack.dtos.book.*;
+import com.cat.S5._2.bookstack.dtos.genre.GenreDto;
 import com.cat.S5._2.bookstack.entities.Author;
 import com.cat.S5._2.bookstack.entities.Book;
 import com.cat.S5._2.bookstack.entities.Genre;
+import com.cat.S5._2.bookstack.mappers.AuthorMapper;
 import com.cat.S5._2.bookstack.mappers.BookMapper;
+import com.cat.S5._2.bookstack.mappers.GenreMapper;
 import com.cat.S5._2.bookstack.repositories.AuthorRepository;
 import com.cat.S5._2.bookstack.repositories.BookRepository;
 import com.cat.S5._2.bookstack.repositories.GenreRepository;
@@ -17,7 +18,10 @@ import lombok.RequiredArgsConstructor;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
+    private final GenreMapper genreMapper;
+    private final AuthorMapper authorMapper;
     private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
 
@@ -65,28 +71,79 @@ public class BookService {
     }
 
     public BookDto updateBook(Long id, UpdateBookDto dto) {
-        Book existingBook = bookRepository.findById(id)
+        Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
 
-        existingBook.setTitle(dto.title());
-        existingBook.setDescription(dto.description());
-        existingBook.setPublicationYear(dto.publicationYear());
-        existingBook.setLanguage(dto.language());
-        existingBook.setImageUrl(dto.imageUrl());
-        existingBook.setIsbn(dto.isbn());
+        updateIfNotNull(dto.title(), book::setTitle);
+        updateIfNotNull(dto.description(), book::setDescription);
+        updateIfNotNull(dto.publicationYear(), book::setPublicationYear);
+        updateIfNotNull(dto.language(), book::setLanguage);
+        updateIfNotNull(dto.imageUrl(), book::setImageUrl);
+        updateIfNotNull(dto.isbn(), book::setIsbn);
 
         if (dto.authorIds() != null) {
-            Set<Author> authors = new HashSet<>(authorRepository.findAllById(dto.authorIds()));
-            existingBook.setAuthors(authors);
-        }
-        if (dto.genreIds() != null) {
-            Set<Genre> genres = new HashSet<>(genreRepository.findAllById(dto.genreIds()));
-            existingBook.setGenres(genres);
+            validateIdsExist(authorRepository, dto.authorIds(), "Author");
+            updateAuthors(book, dto.authorIds());
         }
 
-        Book updated = bookRepository.save(existingBook);
+        if (dto.genreIds() != null) {
+            validateIdsExist(genreRepository, dto.genreIds(), "Genre");
+            updateGenres(book, dto.genreIds());
+        }
+
+        Book updated = bookRepository.save(book);
         return bookMapper.toBookDto(updated);
     }
+
+    @Transactional(readOnly = true)
+    public BookSummaryDto getBookSummary(Long bookId) {
+        Book book = bookRepository.findWithAuthorsByBookId(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+
+        // Vérification de débogage
+        System.out.println("Authors loaded: " + book.getAuthors());
+        System.out.println("Authors size: " + (book.getAuthors() != null ? book.getAuthors().size() : 0));
+
+        return bookMapper.toBookSummaryDto(book);
+    }
+
+    // ---UPDATE HELPERS -- //
+    private <T> void updateIfNotNull(T newValue, Consumer<T> setter) {
+        if (newValue != null) {
+            setter.accept(newValue);
+        }
+    }
+    private void updateAuthors(Book book, List<Long> authorIds) {
+        Set<Author> authors = authorIds.isEmpty()
+                ? new HashSet<>()
+                : new HashSet<>(authorRepository.findAllById(authorIds));
+        book.setAuthors(authors);
+    }
+
+    private void updateGenres(Book book, List<Long> genreIds) {
+        Set<Genre> genres = genreIds.isEmpty()
+                ? new HashSet<>()
+                : new HashSet<>(genreRepository.findAllById(genreIds));
+        book.setGenres(genres);
+    }
+
+    private void validateIdsExist(JpaRepository<?, Long> repository, List<Long> ids, String entityName) {
+        if (ids != null && !ids.isEmpty()) {
+            if (ids != null) {
+                List<Long> missingIds = ids.stream()
+                        .filter(id -> !repository.existsById(id))
+                        .toList();
+
+                if (!missingIds.isEmpty()) {
+                    throw new EntityNotFoundException(
+                            String.format("%s(s) non trouvé(s) avec IDs : %s",
+                                    entityName, missingIds));
+                }
+            }
+        }
+    }
+    /// ---HELPERS FIN ---///
+
     public void deleteBook(Long id) {
         if (!bookRepository.existsById(id)) {
             throw new EntityNotFoundException("Book not found with id: " + id);
@@ -109,6 +166,16 @@ public class BookService {
         result.addAll(bookRepository.findByTitleContainingIgnoreCase(keyword));
         result.addAll(bookRepository.searchByAuthorName(keyword));
         return bookMapper.toBookCardDto(List.copyOf(result));
+    }
+
+    public List<GenreDto> getGenres(){
+        List<Genre> genres = genreRepository.findAll();
+        return genreMapper.toDtoList(genres);
+    }
+
+    public List<AuthorDto> getAllAuthors(){
+        List<Author> authors = authorRepository.findAll();
+        return authorMapper.toDtoList(authors);
     }
 
 

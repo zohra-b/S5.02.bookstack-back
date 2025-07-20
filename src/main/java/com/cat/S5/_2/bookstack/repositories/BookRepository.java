@@ -1,15 +1,13 @@
 package com.cat.S5._2.bookstack.repositories;
 
-import com.cat.S5._2.bookstack.dtos.book.BookCardDto;
 import com.cat.S5._2.bookstack.entities.Author;
 import com.cat.S5._2.bookstack.entities.Book;
-import com.cat.S5._2.bookstack.enums.BookStatus;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,7 +20,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Optional<Book> findByIsbn(String isbn);
     List<Book> findByPublicationYear(Integer year);
     List<Book> findByTitleStartingWithIgnoreCase(String prefix);
-    long countByAuthorsContains(Author author);
+        long countByAuthorsContains(Author author);
+    @EntityGraph(attributePaths = {"authors"})
+    Optional<Book> findWithAuthorsByBookId(Long id);
 
     @Query("""
             SELECT DISTINCT b FROM Book b

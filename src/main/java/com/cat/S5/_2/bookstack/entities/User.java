@@ -1,5 +1,6 @@
 package com.cat.S5._2.bookstack.entities;
 
+import com.cat.S5._2.bookstack.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -18,12 +19,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class User implements UserDetails {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "user_name", nullable = false, unique = true)
     @NotBlank
     @Size(max = 50, message = "User name cannot exceed 50 characters")
     private String userName;
@@ -41,25 +43,17 @@ public class User implements UserDetails {
 
     @Builder.Default // sans cette  Lombok ignore l'initialisation = new HashSet<>() lors de l'utilisation du pattern Builder, ce qui pourrait causer des NullPointerException.
     // Nécessaire pour toutes les collections/champs initialisés quand on utilise @Builder
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles",   // Évite la génération automatique d'une table par Hibernate (contrôle explicite du schéma)
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>(); // Un Set garantit l'unicité (un même rôle ne peut pas être ajouté deux fois à un utilisateur).
-                                                // HashSet est optimisé pour les recherches rapides (contains())
-                                                //  new HashSet<>() : Évite les NullPointerException si aucun rôle n'est attribué.
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role = UserRole.ROLE_USER;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserBook> userBooksList = new ArrayList<>();
 
-    public void addRole(Role role){ //on add le role au user et dans role, on note que le user a tel role
-        this.roles.add(role);
-        role.getUsers().add(this);
-    }
-
-    public void removeRole(Role role){
-        this.roles.remove(role);
-        role.getUsers().remove(this);
+    public void toggleRole() {
+        this.role = this.role == UserRole.ROLE_USER
+                ? UserRole.ROLE_ADMIN
+                : UserRole.ROLE_USER;
     }
 
     public Long getId() {  // (dans updatePassword : #id == principal : fait appel à une methode getId pour avoir l'id)
@@ -68,14 +62,20 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .toList(); // Utilisation de Stream API pour transformer les rôles en autorités
+        return List.of(new SimpleGrantedAuthority(this.role.name()));
+    }
+
+    public boolean isAdmin() {
+        return this.role == UserRole.ROLE_ADMIN;
     }
 
     @Override
     public String getUsername() {
         return this.email;
+    }
+
+    public String getUserName() { // il faut le garder sinon, ne renvoie pas userName dans Insomnia/Postman
+        return userName;
     }
 
     @Override

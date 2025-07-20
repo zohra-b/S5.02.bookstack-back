@@ -1,6 +1,8 @@
 package com.cat.S5._2.bookstack.controllers;
 
 import com.cat.S5._2.bookstack.dtos.author.AuthorDto;
+import com.cat.S5._2.bookstack.dtos.author.CreateAuthorDto;
+import com.cat.S5._2.bookstack.dtos.author.UpdateAuthorDto;
 import com.cat.S5._2.bookstack.services.AuthorService;
 import lombok.RequiredArgsConstructor;
 
@@ -22,20 +24,20 @@ public class AuthorController {
     }
 
     @PostMapping
-    public ResponseEntity<AuthorDto> create(@RequestBody AuthorDto dto) {
+    public ResponseEntity<AuthorDto> create(@RequestBody CreateAuthorDto dto) {
         return ResponseEntity.ok(authorService.create(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AuthorDto> update(@PathVariable Long id, @RequestBody AuthorDto dto) {
+    public ResponseEntity<AuthorDto> update(@PathVariable Long id, @RequestBody UpdateAuthorDto dto) {
         AuthorDto updated = authorService.update(id, dto);
         return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         authorService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Author has been successfully deleted");
     }
 
 

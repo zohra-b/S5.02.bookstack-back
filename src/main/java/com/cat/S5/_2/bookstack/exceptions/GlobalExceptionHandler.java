@@ -41,4 +41,14 @@ public class GlobalExceptionHandler {
                 .status(status)
                 .body(ErrorResponse.create(status, msg, path));
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex, WebRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
+        String path = request.getDescription(false).replace("uri=", "");
+
+        return ResponseEntity
+                .status(status)
+                .body(ErrorResponse.create(status, ex.getMessage(), path));
+    }
 }

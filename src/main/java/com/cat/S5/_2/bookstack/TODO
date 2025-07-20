@@ -1,6 +1,8 @@
-POUR LE TOKEN : Changer SECRET_KEY par une clé sécurisée
-                configurer votre UserDetailsService
+
+
+                CREER UN SECURITY SERVICE QUI IMPLEMENTE USERDETAILS votre UserDetailsService
                 Adapter les durées de validité des tokens selon vos besoins
+
 
 
  Service API Externe pour récupérer les métadonnées : dans un deuxieme temps
@@ -11,3 +13,15 @@ AXIOS POUR LIER FRONT ET BACK
 REACT : CONTEXT POUR LES estados (props)
 
 --------------------------------------------------------17/07/2025
+BOOK SERVICE et BOOK CONTROLLER
+createBook() ->
+    - creation automatique du genre par le nom (recherche : si existe : ok, sinon, le crée)
+    - creation auto des auteurs
+
+    -----------------------------------------------------
+    AUHTOR ET GENRE
+    ne pas pouvoir creer de doublons
+
+    -------------------------------------------
+    USER BOOK CONTROLLER : autorisations à remettre
+

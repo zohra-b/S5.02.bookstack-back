@@ -49,7 +49,8 @@ public class Book {
     @NotNull
     private String isbn;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+            fetch = FetchType.EAGER )
     @JoinTable(
             name = "books_genres",
             joinColumns        = @JoinColumn(name = "book_id"),

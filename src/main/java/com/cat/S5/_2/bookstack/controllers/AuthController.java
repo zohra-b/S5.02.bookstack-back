@@ -24,16 +24,16 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<TokenResponse> register(@RequestBody @Valid RegisterRequest request) {
-        String jwt = authService.register(request);
+        TokenResponse response = authService.register(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(new TokenResponse(jwt));
+                .body(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest request) {
-        String jwt = authService.login(request);
-        return ResponseEntity.ok(new TokenResponse(jwt));
+        TokenResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 
 
