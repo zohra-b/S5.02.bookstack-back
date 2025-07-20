@@ -1,24 +1,26 @@
 package com.cat.S5._2.bookstack.services;
 
+import com.cat.S5._2.bookstack.dtos.book.BookSummaryDto;
+import com.cat.S5._2.bookstack.dtos.user.UserSummaryDto;
 import com.cat.S5._2.bookstack.dtos.userbook.CreateUserBookDto;
 import com.cat.S5._2.bookstack.dtos.userbook.UpdateUserBookDto;
 import com.cat.S5._2.bookstack.dtos.userbook.UserBookDto;
 import com.cat.S5._2.bookstack.entities.Book;
 import com.cat.S5._2.bookstack.entities.User;
 import com.cat.S5._2.bookstack.entities.UserBook;
-import com.cat.S5._2.bookstack.enums.BookStatus;
 import com.cat.S5._2.bookstack.mappers.UserBookMapper;
+import com.cat.S5._2.bookstack.mappers.UserMapper;
 import com.cat.S5._2.bookstack.repositories.BookRepository;
 import com.cat.S5._2.bookstack.repositories.UserBookRepository;
 import com.cat.S5._2.bookstack.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,14 +29,17 @@ public class UserBookService {
     private final UserBookRepository userBookRepository;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
+    private final BookService bookService;
+    private final UserService userService;
     private final UserBookMapper userBookMapper;
+    private final UserMapper userMapper;
 
     @Transactional
     public UserBookDto createUserBook(CreateUserBookDto createUserBookDto) {
         User user = userRepository.findById(createUserBookDto.userId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + createUserBookDto.userId()));
 
-        Book book = bookRepository.findById(createUserBookDto.bookId())
+        Book book = bookRepository.findWithAuthorsByBookId(createUserBookDto.bookId())
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with ID: " + createUserBookDto.bookId()));
 
 
@@ -59,7 +64,17 @@ public class UserBookService {
     public UserBookDto getUserBookById(Long id) {
         UserBook userBook = userBookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("UserBook association not found with ID: " + id));
-        return userBookMapper.toDto(userBook);
+        BookSummaryDto bookSummary = bookService.getBookSummary(userBook.getBook().getBookId());
+        UserSummaryDto userSummary = userMapper.toSummaryDto(userBook.getUser());
+
+        return UserBookDto.builder()
+                .id(userBook.getId())
+                .user(userSummary)
+                .book(bookSummary)
+                .status(userBook.getStatus())
+                .rating(userBook.getRating())
+                .comment(userBook.getComment())
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -104,9 +119,9 @@ public class UserBookService {
 
     @Transactional
     public void deleteUserBook(Long id) {
-        if (!userBookRepository.existsById(id)) {
-            throw new EntityNotFoundException("UserBook association not found with ID: " + id);
-        }
+        userBookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("UserBook association not found with ID: " + id));
         userBookRepository.deleteById(id);
+
     }
 }

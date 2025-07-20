@@ -24,7 +24,6 @@ public record CreateBookDto(
         @NotNull
         List<Long> authorIds,
 
-        @NotNull
         List<Long> genreIds
 ) {}
 

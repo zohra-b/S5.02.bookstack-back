@@ -5,8 +5,10 @@ import com.cat.S5._2.bookstack.entities.Author;
 import com.cat.S5._2.bookstack.entities.Book;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -45,8 +47,25 @@ public interface BookMapper {
     // helper
     @Named("authorsToString")
     static String authorsToString(Set<Author> authors) {
+        if (authors == null || authors.isEmpty()) {
+            return "Unknown Author";
+        }
+
         return authors.stream()
-                .map(a -> a.getFirstName() + " " + a.getLastName())
+                .filter(Objects::nonNull)
+                .map(a -> {
+                    boolean hasFirstName = a.getFirstName() != null;
+                    boolean hasLastName = a.getLastName() != null;
+
+                    if (hasFirstName && hasLastName) {
+                        return a.getFirstName() + " " + a.getLastName();
+                    } else if (hasLastName) {
+                        return a.getLastName();
+                    } else if (hasFirstName) {
+                        return a.getFirstName();
+                    }
+                    return "Anonymous";
+                })
                 .collect(Collectors.joining(", "));
     }
 }

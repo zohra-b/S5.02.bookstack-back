@@ -56,18 +56,18 @@ public class UserController {
         @PatchMapping("{id}/password")
         @PreAuthorize("(authentication.principal.username == @userRepository.findById(#id).orElseThrow().username)  or hasRole('ADMIN')") //ici principal.username fait ref á la methode getUsername{return this.email) dans User
                                                                                 // pour utiliser @PreAuthorize("#user.id == principal.id") il faudrait creer une CustomUserDetails classe
-    public ResponseEntity<Void> updatePassword(@PathVariable Long id,@RequestBody @Valid PasswordDto newPass){
+    public ResponseEntity<String> updatePassword(@PathVariable Long id,@RequestBody @Valid PasswordDto newPass){
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            System.out.println("AUTHENTICATION PRINCIPAL: " + auth.getPrincipal());
+           System.out.println("AUTHENTICATION PRINCIPAL: " + auth.getPrincipal());
             userService.updatePassword(id, newPass);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Your password has been updated");
         }
 
     @PreAuthorize("hasRole('ADMIN')")
       @DeleteMapping("{id}")
-      public ResponseEntity<Void> deleteUser(@PathVariable Long id){
+      public ResponseEntity<String> deleteUser(@PathVariable Long id){
         userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("The user has been deleted");
       }
 
     @PreAuthorize("hasRole('ADMIN')")
