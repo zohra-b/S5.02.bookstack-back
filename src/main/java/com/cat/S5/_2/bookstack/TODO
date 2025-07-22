@@ -9,10 +9,20 @@
 
 
 AXIOS POUR LIER FRONT ET BACK
-
 REACT : CONTEXT POUR LES estados (props)
 
---------------------------------------------------------17/07/2025
+----------------------------------------------------------------------------------------------------------------
+AUTH SERVICE : 22/07 : ok
+--------------------------
+Login : DECONNEXION : je n'ai pas de deconnexion dans le back ? c'est grave ?
+login : mot de passe oublié
+
+----------------------------------------------------------------------------------------------------------------
+USER SERVICE :
+----------------------------
+
+
+----------------------------------------------------------------------------------------------------------------
 BOOK SERVICE et BOOK CONTROLLER
 createBook() ->
     - creation automatique du genre par le nom (recherche : si existe : ok, sinon, le crée)
@@ -24,4 +34,5 @@ createBook() ->
 
     -------------------------------------------
     USER BOOK CONTROLLER : autorisations à remettre
+    tri des userbook par genre et par note et par langue
 

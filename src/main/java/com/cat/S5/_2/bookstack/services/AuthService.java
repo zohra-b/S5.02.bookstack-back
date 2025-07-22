@@ -10,6 +10,7 @@ import com.cat.S5._2.bookstack.repositories.UserRepository;
 import com.cat.S5._2.bookstack.security.JwtService;
 import lombok.RequiredArgsConstructor;
 
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -41,7 +42,7 @@ public class AuthService {
 
         User savedUser = userRepo.save(user);
         String jwtToken =  jwtService.generateToken(savedUser);
-        return new TokenResponse(jwtToken, savedUser.getUserId());
+        return new TokenResponse(jwtToken, savedUser.getUserId(), user.getUserName());
     }
 
     public TokenResponse login(LoginRequest loginRequest){
@@ -55,7 +56,7 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + loginRequest.getEmail()));
 
         String jwtToken =  jwtService.generateToken(user); // Génère un token JWT pour l'utilisateur authentifié
-        return new TokenResponse(jwtToken, user.getUserId());
+        return new TokenResponse(jwtToken, user.getUserId(), user.getUserName());
     }
 
 }
