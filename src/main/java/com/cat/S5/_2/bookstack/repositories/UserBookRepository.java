@@ -4,6 +4,8 @@ import com.cat.S5._2.bookstack.entities.Book;
 import com.cat.S5._2.bookstack.entities.User;
 import com.cat.S5._2.bookstack.entities.UserBook;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,5 +18,11 @@ public interface UserBookRepository extends JpaRepository<UserBook, Long> {
 
     Optional<UserBook> findByUserAndBook(User user, Book book);
     List<UserBook> findByUserAndBook_TitleContainingIgnoreCase(User user, String title);
+
+    @Query("SELECT ub FROM UserBook ub " +
+            "JOIN FETCH ub.book b " +
+            "LEFT JOIN FETCH b.authors " +
+            "WHERE ub.user = :user")
+    List<UserBook> findByUserWithBookAndAuthors(@Param("user") User user);
 
 }

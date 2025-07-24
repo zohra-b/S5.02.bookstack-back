@@ -81,7 +81,9 @@ public class UserBookService {
     public List<UserBookDto> getUserBooksByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
-        List<UserBook> userBooks = userBookRepository.findByUser(user);
+
+        List<UserBook> userBooks = userBookRepository.findByUserWithBookAndAuthors(user);
+
         return userBooks.stream()
                 .map(userBookMapper::toDto)
                 .toList();
