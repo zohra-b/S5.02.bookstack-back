@@ -10,11 +10,9 @@ import com.cat.S5._2.bookstack.entities.UserBook;
 
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { BookMapper.class, UserMapper.class })
 public interface UserBookMapper {
 
-    UserSummaryDto toSummary(User user);
-    BookSummaryDto toSummary(Book book);
 
 
     UserBookDto toDto(UserBook userBook);
