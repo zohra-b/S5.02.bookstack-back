@@ -1,31 +1,26 @@
 package com.cat.S5._2.bookstack.mappers;
 
-import com.cat.S5._2.bookstack.dtos.book.*;
+import com.cat.S5._2.bookstack.dtos.book.BookCardDto;
+import com.cat.S5._2.bookstack.dtos.book.BookDto;
+import com.cat.S5._2.bookstack.dtos.book.BookSummaryDto;
+import com.cat.S5._2.bookstack.dtos.book.CreateBookDto;
+import com.cat.S5._2.bookstack.dtos.book.UpdateBookDto;
 import com.cat.S5._2.bookstack.entities.Author;
 import com.cat.S5._2.bookstack.entities.Book;
 import com.cat.S5._2.bookstack.entities.Genre;
+import com.cat.S5._2.bookstack.services.GenreService;
 
+import org.mapstruct.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
-public interface BookMapper {
-    @Mapping(target = "author",
-            source = "authors",
-            qualifiedByName = "authorsToString")
-    @Mapping(target = "genres",
-            source = "genres",
-            qualifiedByName = "genresToList")
-    BookDto toBookDto(Book book);
+public abstract class BookMapper {
 
+    @Autowired
+    protected GenreService genreService;
 
     @Mapping(target = "author",
             source = "authors",
@@ -33,32 +28,44 @@ public interface BookMapper {
     @Mapping(target = "genres",
             source = "genres",
             qualifiedByName = "genresToList")
-    BookCardDto toBookCardDto(Book book);
+    public abstract BookDto toBookDto(Book book);
 
     @Mapping(target = "author",
             source = "authors",
             qualifiedByName = "authorsToString")
-    BookSummaryDto toBookSummaryDto(Book book);
+    @Mapping(target = "genres",
+            source = "genres",
+            qualifiedByName = "genresToList")
+    public abstract BookCardDto toBookCardDto(Book book);
 
-    List<BookDto> toBookDto(List<Book> books);
-    List<BookCardDto> toBookCardDto(List<Book> books);
+    @Mapping(target = "author",
+            source = "authors",
+            qualifiedByName = "authorsToString")
+    public abstract BookSummaryDto toBookSummaryDto(Book book);
 
-    Book toEntity(BookDto bookDto);
+    public abstract List<BookDto> toBookDto(List<Book> books);
+    public abstract List<BookCardDto> toBookCardDto(List<Book> books);
+
+    @Mapping(target = "authors", ignore = true)
+    @Mapping(target = "genres", source = "genres", qualifiedByName = "genreNamesToEntities")
+    public abstract Book toEntity(BookDto bookDto);
 
     @Mapping(target = "authors", ignore = true)
     @Mapping(target = "genres", ignore = true)
-    Book toEntity(UpdateBookDto dto);
+    public abstract Book toEntity(UpdateBookDto dto);
 
     @Mapping(target = "authors", ignore = true)
     @Mapping(target = "genres", ignore = true)
-    Book toEntity(CreateBookDto dto);
+    public abstract Book toEntity(CreateBookDto dto);
 
-    // helper
+    // --- HELPER MAPPINGS --- //
+
     @Named("authorsToString")
-    static String authorsToString(Set<Author> authors) {
+    protected static String authorsToString(Set<Author> authors) {
         if (authors == null || authors.isEmpty()) {
             return "Unknown Author";
         }
+
         return authors.stream()
                 .filter(Objects::nonNull)
                 .map(a -> {
@@ -76,8 +83,9 @@ public interface BookMapper {
                 })
                 .collect(Collectors.joining(", "));
     }
+
     @Named("genresToList")
-    static List<String> genresToList(Set<Genre> genres) {
+    protected static List<String> genresToList(Set<Genre> genres) {
         if (genres == null || genres.isEmpty()) {
             return List.of();
         }
@@ -88,4 +96,15 @@ public interface BookMapper {
                 .collect(Collectors.toList());
     }
 
+    @Named("genreNamesToEntities")
+    protected Set<Genre> genreNamesToEntities(List<String> genreNames) {
+        if (genreNames == null || genreNames.isEmpty()) {
+            return Set.of();
+        }
+
+        return genreNames.stream()
+                .map(name -> genreService.findByName(name)
+                        .orElseThrow(() -> new RuntimeException("Genre not found: " + name)))
+                .collect(Collectors.toSet());
+    }
 }

@@ -27,6 +27,11 @@ public class GenreService {
                 .toList();
     }
 
+    public Optional<Genre> findByName(String name) {
+        return genreRepository.findByNameIgnoreCase(name);
+    }
+
+
     public GenreDto createGenre(CreateGenreDto dto) {
         Genre genre = genreMapper.toEntity(dto);
         Genre saved = genreRepository.save(genre);
@@ -48,6 +53,7 @@ public class GenreService {
             setter.accept(newValue);
         }
     }
+
 
     public void deleteGenre(Long genreId){
         genreRepository.deleteById(genreId);
