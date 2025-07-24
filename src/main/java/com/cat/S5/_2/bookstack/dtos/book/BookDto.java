@@ -2,6 +2,8 @@ package com.cat.S5._2.bookstack.dtos.book;
 
 import lombok.Builder;
 
+import java.util.List;
+
 @Builder
 public record BookDto(
         Long bookId,
@@ -10,5 +12,7 @@ public record BookDto(
         Integer publicationYear,
         String description,
         String imageUrl,
-        String isbn
+        String isbn,
+        List<String> genres
+
 ) {}

@@ -88,6 +88,19 @@ public class UserBookService {
     }
 
     @Transactional(readOnly = true)
+    public List<UserBookDto> searchUserBooksByUserIdAndKeyword(Long userId, String keyword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+
+        List<UserBook> userBooks = userBookRepository
+                .findByUserAndBook_TitleContainingIgnoreCase(user, keyword);
+
+        return userBooks.stream()
+                .map(userBookMapper::toDto)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<UserBookDto> getUserBooksByBookId(Long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with ID: " + bookId));

@@ -1,9 +1,15 @@
 package com.cat.S5._2.bookstack.exceptions;
 
 import com.cat.S5._2.bookstack.enums.UserRole;
+import com.cat.S5._2.bookstack.security.exceptions.TokenExpiredException;
+import com.cat.S5._2.bookstack.security.exceptions.TokenMalformedJwtException;
+import com.cat.S5._2.bookstack.security.exceptions.TokenSignatureException;
 import jakarta.persistence.EntityNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -51,4 +57,38 @@ public class GlobalExceptionHandler {
                 .status(status)
                 .body(ErrorResponse.create(status, ex.getMessage(), path));
     }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<Object> handleTokenExpired(TokenExpiredException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", 401);
+        body.put("error", "Unauthorized");
+        body.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(TokenMalformedJwtException.class)
+    public ResponseEntity<Object> handleMalformedJwt(TokenMalformedJwtException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", 401);
+        body.put("error", "Unauthorized");
+        body.put("message", "Invalid JWT");
+
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(TokenSignatureException.class)
+    public ResponseEntity<Object> handleSignatureException(TokenSignatureException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", 401);
+        body.put("error", "Unauthorized");
+        body.put("message", "Token signature invalid");
+
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    }
+
 }

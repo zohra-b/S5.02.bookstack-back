@@ -3,6 +3,8 @@ package com.cat.S5._2.bookstack.mappers;
 import com.cat.S5._2.bookstack.dtos.book.*;
 import com.cat.S5._2.bookstack.entities.Author;
 import com.cat.S5._2.bookstack.entities.Book;
+import com.cat.S5._2.bookstack.entities.Genre;
+
 
 import java.util.List;
 import java.util.Objects;
@@ -19,11 +21,18 @@ public interface BookMapper {
     @Mapping(target = "author",
             source = "authors",
             qualifiedByName = "authorsToString")
+    @Mapping(target = "genres",
+            source = "genres",
+            qualifiedByName = "genresToList")
     BookDto toBookDto(Book book);
+
 
     @Mapping(target = "author",
             source = "authors",
             qualifiedByName = "authorsToString")
+    @Mapping(target = "genres",
+            source = "genres",
+            qualifiedByName = "genresToList")
     BookCardDto toBookCardDto(Book book);
 
     @Mapping(target = "author",
@@ -50,7 +59,6 @@ public interface BookMapper {
         if (authors == null || authors.isEmpty()) {
             return "Unknown Author";
         }
-
         return authors.stream()
                 .filter(Objects::nonNull)
                 .map(a -> {
@@ -68,4 +76,16 @@ public interface BookMapper {
                 })
                 .collect(Collectors.joining(", "));
     }
+    @Named("genresToList")
+    static List<String> genresToList(Set<Genre> genres) {
+        if (genres == null || genres.isEmpty()) {
+            return List.of();
+        }
+
+        return genres.stream()
+                .filter(Objects::nonNull)
+                .map(Genre::getName)
+                .collect(Collectors.toList());
+    }
+
 }

@@ -46,7 +46,6 @@ public class Book {
     private String imageUrl;
 
     @Column (unique = true)
-    @NotNull
     private String isbn;
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE },

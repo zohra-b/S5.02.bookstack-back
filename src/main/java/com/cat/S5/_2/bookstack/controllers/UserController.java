@@ -42,10 +42,6 @@ public class UserController {
         return ResponseEntity.ok(userService.findDtoById(id));
         }
 
-        @GetMapping("/{id}/books")
-    public ResponseEntity<List<UserBookDto>> getUserBooksList(@PathVariable Long id){
-        return ResponseEntity.ok(userService.getUserBooks(id));
-        }
 
         @PatchMapping("/{id}")
         @PreAuthorize("(authentication.principal.username == @userRepository.findById(#id).orElseThrow().username)  or hasRole('ADMIN')")

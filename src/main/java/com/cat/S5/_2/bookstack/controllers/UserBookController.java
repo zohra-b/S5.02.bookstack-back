@@ -39,6 +39,15 @@ public class UserBookController {
         return ResponseEntity.ok(userBooks);
     }
 
+    @GetMapping("/by-user/{userId}/search")
+    public ResponseEntity<List<UserBookDto>> searchUserBooksByUserIdAndKeyword(
+            @PathVariable Long userId,
+            @RequestParam String keyword) {
+
+        List<UserBookDto> results = userBookService.searchUserBooksByUserIdAndKeyword(userId, keyword);
+        return ResponseEntity.ok(results);
+    }
+
 
     @GetMapping("/by-book/{bookId}")
     public ResponseEntity<List<UserBookDto>> getUserBooksByBookId(@PathVariable Long bookId) {
@@ -53,6 +62,7 @@ public class UserBookController {
         UserBookDto updatedUserBook = userBookService.updateUserBook(id, updateUserBookDto);
         return ResponseEntity.ok(updatedUserBook);
     }
+
     //@PreAuthorize("@userBookRepository.findById(#id).orElseThrow().user.id == authentication.principal.id or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserBook(@PathVariable Long id) {
