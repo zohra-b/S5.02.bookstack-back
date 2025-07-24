@@ -15,4 +15,6 @@ public interface UserBookRepository extends JpaRepository<UserBook, Long> {
     List<UserBook> findByBook(Book book);
 
     Optional<UserBook> findByUserAndBook(User user, Book book);
+    List<UserBook> findByUserAndBook_TitleContainingIgnoreCase(User user, String title);
+
 }
