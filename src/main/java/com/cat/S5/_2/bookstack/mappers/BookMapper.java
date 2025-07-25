@@ -38,9 +38,9 @@ public abstract class BookMapper {
             qualifiedByName = "genresToList")
     public abstract BookCardDto toBookCardDto(Book book);
 
-    @Mapping(target = "author",
-            source = "authors",
-            qualifiedByName = "authorsToString")
+    @Mapping(target = "author", source = "authors", qualifiedByName = "authorsToString")
+    @Mapping(target = "imageUrl", source = "imageUrl")
+    @Mapping(target = "bookId", source = "bookId") //
     public abstract BookSummaryDto toBookSummaryDto(Book book);
 
     public abstract List<BookDto> toBookDto(List<Book> books);
@@ -50,9 +50,15 @@ public abstract class BookMapper {
     @Mapping(target = "genres", source = "genres", qualifiedByName = "genreNamesToEntities")
     public abstract Book toEntity(BookDto bookDto);
 
+//    @Mapping(target = "authors", ignore = true)
+//    @Mapping(target = "genres", ignore = true)
+//    public abstract Book toEntity(UpdateBookDto dto);
+
     @Mapping(target = "authors", ignore = true)
     @Mapping(target = "genres", ignore = true)
-    public abstract Book toEntity(UpdateBookDto dto);
+    public abstract void updateEntityFromDto(UpdateBookDto dto, @MappingTarget Book book);
+
+    /////////////////
 
     @Mapping(target = "authors", ignore = true)
     @Mapping(target = "genres", ignore = true)

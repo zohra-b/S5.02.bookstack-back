@@ -70,30 +70,44 @@ public class BookService {
         return bookMapper.toBookDto(book);
     }
 
-    public BookDto updateBook(Long id, UpdateBookDto dto) {
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
+//    public BookDto updateBook(Long id, UpdateBookDto dto) {
+//        Book book = bookRepository.findById(id)
+//                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
+//
+//        updateIfNotNull(dto.title(), book::setTitle);
+//        updateIfNotNull(dto.description(), book::setDescription);
+//        updateIfNotNull(dto.publicationYear(), book::setPublicationYear);
+//        updateIfNotNull(dto.language(), book::setLanguage);
+//        updateIfNotNull(dto.imageUrl(), book::setImageUrl);
+//        updateIfNotNull(dto.isbn(), book::setIsbn);
+//
+//        if (dto.authorIds() != null) {
+//            validateIdsExist(authorRepository, dto.authorIds(), "Author");
+//            updateAuthors(book, dto.authorIds());
+//        }
+//
+//        if (dto.genreIds() != null) {
+//            validateIdsExist(genreRepository, dto.genreIds(), "Genre");
+//            updateGenres(book, dto.genreIds());
+//        }
+//
+//        bookMapper.updateEntityFromDto(dto, book);
+//    Book updated = bookRepository.save(book);
+//    return bookMapper.toBookDto(updated);
+//
+//
+//    }
+public BookDto updateBook(Long id, UpdateBookDto dto) {
+    Book book = bookRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
 
-        updateIfNotNull(dto.title(), book::setTitle);
-        updateIfNotNull(dto.description(), book::setDescription);
-        updateIfNotNull(dto.publicationYear(), book::setPublicationYear);
-        updateIfNotNull(dto.language(), book::setLanguage);
-        updateIfNotNull(dto.imageUrl(), book::setImageUrl);
-        updateIfNotNull(dto.isbn(), book::setIsbn);
 
-        if (dto.authorIds() != null) {
-            validateIdsExist(authorRepository, dto.authorIds(), "Author");
-            updateAuthors(book, dto.authorIds());
-        }
 
-        if (dto.genreIds() != null) {
-            validateIdsExist(genreRepository, dto.genreIds(), "Genre");
-            updateGenres(book, dto.genreIds());
-        }
+    bookMapper.updateEntityFromDto(dto, book);
+    Book updated = bookRepository.save(book);
+    return bookMapper.toBookDto(updated);
+}
 
-        Book updated = bookRepository.save(book);
-        return bookMapper.toBookDto(updated);
-    }
 
     @Transactional(readOnly = true)
     public BookSummaryDto getBookSummary(Long bookId) {
