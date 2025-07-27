@@ -18,7 +18,6 @@ public record CreateBookDto(
         String language,
         String imageUrl,
 
-        @NotNull
         String isbn,
 
         @NotNull
