@@ -117,12 +117,39 @@ The following endpoints are available for user authentication:
 
 ---
 
+## 🏗️ Database Initialization
+### Seeding your database importing datas
+1. Log in to phpMyAdmin / MySQL
+2. Click on the **"Import"** tab
+3. Select the `bookstack_dump.sql` file
+
+
+### Sample SQL Data
+```sql
+-- Users
+INSERT INTO users (email, password, user_name, role) VALUES
+('admin', 'admin@bookstack.com', 'mypassword', 'ROLE_ADMIN'),
+('user1', 'user1@email.com', 'mypassword', 'role_USER');
+
+-- Books
+INSERT INTO books (title, isbn, publication_year, language, image_url, description) VALUES
+('Children of the Alley', ' 0385420943', 1996, 'English', 'https://m.media-amazon.com/images/I/91rO7YtH76L._SL1500_.jpg', 'First published in Arabic in 1959, the story of an Egyptian family mirrors the spiritual history of humankind as a feudal lord disowns one son for diabolical pride and puts another son to the ultimate test. By the Nobel Prize-winning author of Arabian Nights and Days. ')
+
+-- Books / Author
+INSERT INTO books_authors (book_id, author_id) VALUES
+(254, 136)
+
+-- UserBooks
+INSERT INTO user_book_associations (user_id, book_id, status, rating, comment) VALUES
+(2, 254, 'FINISHED', 5, "I loved it !")
+
 ## 🧪 Testing
 
 To run the test suite, execute the following command:
 
 ```bash
 mvn test
+```
 
 ## 🤝 Contributing
 
