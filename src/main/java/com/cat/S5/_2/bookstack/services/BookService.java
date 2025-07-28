@@ -15,8 +15,13 @@ import com.cat.S5._2.bookstack.repositories.GenreRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -28,7 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 @Transactional
+
 public class BookService {
+    private static final Logger logger = LoggerFactory.getLogger(BookService.class);
+
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final GenreMapper genreMapper;
@@ -37,22 +45,31 @@ public class BookService {
     private final GenreRepository genreRepository;
 
     public List<BookDto> getAllBooks() {
+        logger.debug("Fetching all bookDtos");
         List<Book> books = bookRepository.findAll();
+        logger.debug("Number of books fetched : {}" , books.size()  );
         return bookMapper.toBookDto(books);
     }
 
     public List<BookCardDto> getAllBookCards() {
+        logger.debug("Fetching all bookCardDtos");
         List<Book> books = bookRepository.findAllWithAuthors();
         return bookMapper.toBookCardDto(books);
     }
 
     public BookDto getBookById(Long id) {
+        logger.debug("Fetching book with id: {}", id );
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
+                .orElseThrow(() -> {
+                        logger.error("Book not found with id: {}", id);
+                        return new EntityNotFoundException("Book not found with id: " + id);
+                });
+        logger.debug("Book found: {}", book.getTitle());
         return bookMapper.toBookDto(book);
     }
 
     public BookDto createBook(CreateBookDto dto) {
+        logger.debug("Creating book with title: {}", dto.title());
         Book book = new Book();
         book.setTitle(dto.title());
         book.setDescription(dto.description());
@@ -66,13 +83,19 @@ public class BookService {
         book.setAuthors(authors);
         book.setGenres(genres);
 
-        book = bookRepository.save(book);
+        Book savedBook = bookRepository.save(book);
+        logger.info("Book created with ID: {}", savedBook.getBookId());
         return bookMapper.toBookDto(book);
     }
 
 //    public BookDto updateBook(Long id, UpdateBookDto dto) {
+//        logger.info("Updating book with id: {} and new title: {}", id, dto.title());
+//
 //        Book book = bookRepository.findById(id)
-//                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
+//                .orElseThrow(() -> {
+//                    logger.error("Book not found with id: {}", id);
+//                    return new EntityNotFoundException("Book not found with id: " + id);
+//                });
 //
 //        updateIfNotNull(dto.title(), book::setTitle);
 //        updateIfNotNull(dto.description(), book::setDescription);
@@ -82,42 +105,63 @@ public class BookService {
 //        updateIfNotNull(dto.isbn(), book::setIsbn);
 //
 //        if (dto.authorIds() != null) {
+//            logger.debug("Updating authors to IDs: {}", dto.authorIds());
 //            validateIdsExist(authorRepository, dto.authorIds(), "Author");
 //            updateAuthors(book, dto.authorIds());
 //        }
 //
 //        if (dto.genreIds() != null) {
+//            logger.debug("Updating genres to IDs: {}", dto.genreIds());
 //            validateIdsExist(genreRepository, dto.genreIds(), "Genre");
 //            updateGenres(book, dto.genreIds());
 //        }
 //
 //        bookMapper.updateEntityFromDto(dto, book);
-//    Book updated = bookRepository.save(book);
-//    return bookMapper.toBookDto(updated);
 //
+//        Book updated = bookRepository.save(book);
+//        logger.info("Book updated successfully with id: {}", updated.getBookId());
 //
+//        return bookMapper.toBookDto(updated);
 //    }
+
 public BookDto updateBook(Long id, UpdateBookDto dto) {
+        logger.debug("Trying to update book with id {}",id);
     Book book = bookRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + id));
+            .orElseThrow(() -> {
+                logger.error("Book not found with id: {}", id);
+                return new EntityNotFoundException("Book not found with id: " + id);
+            });
 
+    if (dto.authorIds() != null) {
+        logger.debug("Updating authors with IDs: {}", dto.authorIds());
+        validateIdsExist(authorRepository, dto.authorIds(), "Author");
+        updateAuthors(book, dto.authorIds());
+    }
 
+    if (dto.genreIds() != null) {
+        logger.debug("Updating genres with IDs: {}", dto.genreIds());
+        validateIdsExist(genreRepository, dto.genreIds(), "Genre");
+        updateGenres(book, dto.genreIds());
+    }
 
-    bookMapper.updateEntityFromDto(dto, book);
-    Book updated = bookRepository.save(book);
-    return bookMapper.toBookDto(updated);
+    try {
+        Book updated = bookRepository.save(book);
+        logger.info("Book with id {} successfully updated", id);
+        return bookMapper.toBookDto(updated);
+    } catch (Exception e) {
+        logger.error("Failed to update book with id {}: {}", id, e.getMessage(), e);
+        throw e;
+    }
+
 }
 
-
     @Transactional(readOnly = true)
-    public BookSummaryDto getBookSummary(Long bookId) {
-        Book book = bookRepository.findWithAuthorsByBookId(bookId)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
-
-        // Vérification de débogage
-        System.out.println("Authors loaded: " + book.getAuthors());
-        System.out.println("Authors size: " + (book.getAuthors() != null ? book.getAuthors().size() : 0));
-
+    public BookSummaryDto getBookSummary(Long id) {
+        Book book = bookRepository.findWithAuthorsByBookId(id)
+                .orElseThrow(() -> {
+                    logger.error("Book not found with id: {}", id);
+                    return new EntityNotFoundException("Book not found with id: " + id);
+                });
         return bookMapper.toBookSummaryDto(book);
     }
 
@@ -134,33 +178,63 @@ public BookDto updateBook(Long id, UpdateBookDto dto) {
         book.setAuthors(authors);
     }
 
+//    private void updateGenres(Book book, List<Long> genreIds) {
+//        Set<Genre> genres = genreIds.isEmpty()
+//                ? new HashSet<>()
+//                : new HashSet<>(genreRepository.findAllById(genreIds));
+//        book.setGenres(genres);
+//    }
+
     private void updateGenres(Book book, List<Long> genreIds) {
-        Set<Genre> genres = genreIds.isEmpty()
-                ? new HashSet<>()
-                : new HashSet<>(genreRepository.findAllById(genreIds));
+        if (genreIds == null || genreIds.isEmpty()) {
+            book.setGenres(new HashSet<>());
+            return;
+        }
+
+        // Filtrer les null pour éviter l'erreur
+        List<Long> filteredGenreIds = genreIds.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        // Valider que tous les IDs existent
+        validateIdsExist(genreRepository, filteredGenreIds, "Genre");
+
+        Set<Genre> genres = new HashSet<>(genreRepository.findAllById(filteredGenreIds));
         book.setGenres(genres);
     }
+//    private void validateIdsExist(JpaRepository<?, Long> repository, List<Long> ids, String entityName) {
+//        if (ids != null && !ids.isEmpty()) {
+//            if (ids != null) {
+//                List<Long> missingIds = ids.stream()
+//                        .filter(id -> !repository.existsById(id))
+//                        .toList();
+//
+//                if (!missingIds.isEmpty()) {
+//                    throw new EntityNotFoundException(
+//                            String.format("%s(s) non trouvé(s) avec IDs : %s",
+//                                    entityName, missingIds));
+//                }
+//            }
+//        }
+//    }
+private void validateIdsExist(JpaRepository<?, Long> repository, List<Long> ids, String entityName) {
+    if (ids != null && !ids.isEmpty()) {
+        List<Long> missingIds = ids.stream()
+                .filter(id -> !repository.existsById(id))
+                .toList();
 
-    private void validateIdsExist(JpaRepository<?, Long> repository, List<Long> ids, String entityName) {
-        if (ids != null && !ids.isEmpty()) {
-            if (ids != null) {
-                List<Long> missingIds = ids.stream()
-                        .filter(id -> !repository.existsById(id))
-                        .toList();
-
-                if (!missingIds.isEmpty()) {
-                    throw new EntityNotFoundException(
-                            String.format("%s(s) non trouvé(s) avec IDs : %s",
-                                    entityName, missingIds));
-                }
-            }
+        if (!missingIds.isEmpty()) {
+            throw new EntityNotFoundException(
+                    String.format("%s(s) non trouvé(s) avec IDs : %s", entityName, missingIds));
         }
     }
+}
     /// ---HELPERS FIN ---///
 
     public void deleteBook(Long id) {
         if (!bookRepository.existsById(id)) {
-            throw new EntityNotFoundException("Book not found with id: " + id);
+                logger.error("Book not found with id: {}", id);
+                throw new EntityNotFoundException("Book not found with id: " + id);
         }
         bookRepository.deleteById(id);
     }
@@ -170,25 +244,30 @@ public BookDto updateBook(Long id, UpdateBookDto dto) {
         return bookMapper.toBookDto(books);
     }
 
-    public List<BookDto> searchByAuthorName(String keyword) {
-        List<Book> books = bookRepository.searchByAuthorName(keyword);
-        return bookMapper.toBookDto(books);
-    }
 
     public List<BookCardDto> searchBooks(String keyword) {
         Set<Book> result = new HashSet<>();
-        result.addAll(bookRepository.findByTitleContainingIgnoreCase(keyword));
-        result.addAll(bookRepository.searchByAuthorName(keyword));
+
+        List<Book> byTitle = bookRepository.findByTitleContainingIgnoreCase(keyword);
+        List<Book> byAuthor = bookRepository.searchByAuthorName(keyword);
+
+        result.addAll(byTitle);
+        result.addAll(byAuthor);
+
+        logger.debug("Found {} book(s) by title, {} by author, total: {}",
+                byTitle.size(), byAuthor.size(), result.size());
         return bookMapper.toBookCardDto(List.copyOf(result));
     }
 
     public List<GenreDto> getGenres(){
         List<Genre> genres = genreRepository.findAll();
+        logger.debug("Fetched {} genres", genres.size());
         return genreMapper.toDtoList(genres);
     }
 
     public List<AuthorDto> getAllAuthors(){
         List<Author> authors = authorRepository.findAll();
+        logger.debug("Fetched {} authors", authors.size());
         return authorMapper.toDtoList(authors);
     }
 

@@ -10,10 +10,11 @@ import com.cat.S5._2.bookstack.mappers.UserBookMapper;
 import com.cat.S5._2.bookstack.mappers.UserMapper;
 import com.cat.S5._2.bookstack.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class UserService implements UserDetailsService {
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     private final UserRepository userRepo;
     private final UserMapper userMapper;
     private final UserBookMapper userBookMapper;
@@ -35,10 +38,13 @@ public class UserService implements UserDetailsService {
 
 
     public List<UserDto> findAll(){
-        return userRepo.findAll().stream()
+        logger.info("Fetching all users");
+        List<UserDto> allUsers = userRepo.findAll().stream()
                 .map(userMapper::toUserDto)
                 .sorted(Comparator.comparing(UserDto::userName))
                 .toList();
+        logger.debug("Fetched {} users." , allUsers.size());
+        return allUsers;
     }
 
     public User findById(Long id){
