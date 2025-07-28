@@ -86,25 +86,37 @@ This project leverages the following key technologies:
 
 The backend is a Java Spring Boot application organized with a clean layered architecture.
 
+Bien sûr ! C'est un aperçu de la structure de votre projet, souvent appelé "tree view" ou "directory structure". Pour qu'il s'affiche correctement dans votre README, vous pouvez l'encapsuler dans un bloc de code. Cela permet de conserver l'indentation et la lisibilité.
+
+Voici comment vous pouvez l'ajouter à votre README.md :
+
+Markdown
+
+---
+
+## 📂 Project Structure
+
+Here's an overview of the main directories and files in this project:
+```
 src/
 └── main/
-└── java/
-    └── com.cat.S5_2.bookstack/
-        ├── config/ # Spring configuration files (e.g., security, CORS, Swagger)
-        ├── controllers/ # REST controllers (API endpoints)
-        ├── dtos/ # Data Transfer Objects for input/output
-        ├── entities/ # JPA entities representing database tables
-        ├── enums/ # Enum definitions (e.g., book status)
-        ├── exceptions/ # Custom exceptions and handlers
-        ├── mappers/ # MapStruct interfaces for converting entities <-> DTOs
-        ├── repositories/ # Spring Data JPA repositories (CRUD)
-        ├── security/ # Security config (JWT, filters, user details)
-        ├── services/ # Business logic and service layer
-        ├── Application.java # Main Spring Boot application entry point
-        └── bookstack_dump.sql
-└──resources/
-        ├── application.properties # App configuration (port, DB, JWT secrets, etc.)
-        └── logback-spring.xml # Logging configuration
+├── java/
+│   └── com.cat.S5_2.bookstack/
+│       ├── config/        # Spring configuration files (e.g., security, CORS, Swagger)
+│       ├── controllers/   # REST controllers (API endpoints)
+│       ├── dtos/          # Data Transfer Objects for input/output
+│       ├── entities/      # JPA entities representing database tables
+│       ├── enums/         # Enum definitions (e.g., book status)
+│       ├── exceptions/    # Custom exceptions and handlers
+│       ├── mappers/       # MapStruct interfaces for converting entities <-> DTOs
+│       ├── repositories/  # Spring Data JPA repositories (CRUD)
+│       ├── security/      # Security config (JWT, filters, user details)
+│       ├── services/      # Business logic and service layer
+│       └── Application.java # Main Spring Boot application entry point
+└── resources/
+├── application.properties # App configuration (port, DB, JWT secrets, etc.)
+└── logback-spring.xml   # Logging configuration
+```
 ---
 
 ## 📦 Domain Models
