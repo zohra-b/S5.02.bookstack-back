@@ -82,6 +82,30 @@ This project leverages the following key technologies:
 * **OpenAPI 3.0**: `springdoc-openapi 2.8.9`
 
 ---
+## 📦 Backend Project Structure
+
+The backend is a Java Spring Boot application organized with a clean layered architecture.
+
+src/
+└── main/
+└── java/
+    └── com.cat.S5_2.bookstack/
+        ├── config/ # Spring configuration files (e.g., security, CORS, Swagger)
+        ├── controllers/ # REST controllers (API endpoints)
+        ├── dtos/ # Data Transfer Objects for input/output
+        ├── entities/ # JPA entities representing database tables
+        ├── enums/ # Enum definitions (e.g., book status)
+        ├── exceptions/ # Custom exceptions and handlers
+        ├── mappers/ # MapStruct interfaces for converting entities <-> DTOs
+        ├── repositories/ # Spring Data JPA repositories (CRUD)
+        ├── security/ # Security config (JWT, filters, user details)
+        ├── services/ # Business logic and service layer
+        ├── Application.java # Main Spring Boot application entry point
+        └── bookstack_dump.sql
+└──resources/
+        ├── application.properties # App configuration (port, DB, JWT secrets, etc.)
+        └── logback-spring.xml # Logging configuration
+---
 
 ## 📦 Domain Models
 
