@@ -9,6 +9,10 @@ import com.cat.S5._2.bookstack.repositories.AuthorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -17,6 +21,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class AuthorService {
+    private final static Logger logger = LoggerFactory.getLogger(AuthorService.class);
 
     private final AuthorRepository authorRepository;
     private final AuthorMapper authorMapper;
@@ -30,13 +35,18 @@ public class AuthorService {
     }
 
     public AuthorDto update(Long id, UpdateAuthorDto dto) {
+        logger.debug("Attempting to update author with id: {}", id);
         Optional<Author> optionalAuthor = authorRepository.findById(id);
-        if (optionalAuthor.isEmpty()) return null;
+        if (optionalAuthor.isEmpty()) {
+            logger.warn("Author not found with id: {}", id);
+            return null;
+        }
 
         Author author = optionalAuthor.get();
         updateIfNotNull(dto.getFirstName(), author::setFirstName);
         updateIfNotNull(dto.getLastName(), author::setLastName);
         Author saved = authorRepository.save(author);
+        logger.info("Author with id {} successfully updated", id);
         return authorMapper.toDto(saved);
     }
 

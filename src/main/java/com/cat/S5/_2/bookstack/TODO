@@ -1,17 +1,17 @@
 
-jwtService : generate token .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+
+
 
 
                 CREER UN SECURITY SERVICE QUI IMPLEMENTE USERDETAILS votre UserDetailsService
-                Adapter les durées de validité des tokens selon vos besoins
+
 
 
 
  Service API Externe pour récupérer les métadonnées : dans un deuxieme temps
 
-IMPLEMENTER DES LOGGERS
-AXIOS POUR LIER FRONT ET BACK
-REACT : CONTEXT POUR LES estados (props)
+IMPLEMENTER DES LOGGERS : définir des niveaux de log différents par environnement (dev vs prod)
+
 
 ----------------------------------------------------------------------------------------------------------------
 AUTH SERVICE : 22/07 : ok
