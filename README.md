@@ -33,20 +33,27 @@ Follow these steps to get the project up and running:
     CREATE DATABASE bookstack;
   
 
-3.  **Configure your database: (application.properties):**
+3.  **Configure your database: (application.properties file):**
     Open `src/main/resources/application.properties` and update the MySQL connection details:
-
-    ```bash
     
-    # MySQL Configuration 
+```properties
+# --- MySQL Configuration ---
 spring.datasource.url=jdbc:mysql://localhost:3306/bookstack?useSSL=false&serverTimezone=UTC
 spring.datasource.username=root
 spring.datasource.password=your_password
 spring.jpa.hibernate.ddl-auto=update
-  # JWT Configuration
+
+# --- JWT Configuration ---
 jwt.secret.key=your-secret-key
 
-    ```
+```
+
+
+you can generate your secret key with this command : 
+```
+openssl rand -base64 32
+```
+
 
 4.  **Build and run the application:**
 
