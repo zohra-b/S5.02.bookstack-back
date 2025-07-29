@@ -33,19 +33,27 @@ Follow these steps to get the project up and running:
     CREATE DATABASE bookstack;
   
 
-3.  **Configure your database: (application.properties):**
+3.  **Configure your database: (application.properties file):**
     Open `src/main/resources/application.properties` and update the MySQL connection details:
-
-    ```properties
-    # MySQL Configuration
+    
+```properties
+# --- MySQL Configuration ---
 spring.datasource.url=jdbc:mysql://localhost:3306/bookstack?useSSL=false&serverTimezone=UTC
 spring.datasource.username=root
 spring.datasource.password=your_password
 spring.jpa.hibernate.ddl-auto=update
 
-  # JWT Configuration
+# --- JWT Configuration ---
 jwt.secret.key=your-secret-key
-    ```
+
+```
+
+
+you can generate your secret key with this command : 
+```
+openssl rand -base64 32
+```
+
 
 4.  **Build and run the application:**
 
@@ -85,12 +93,6 @@ This project leverages the following key technologies:
 ## 📦 Backend Project Structure
 
 The backend is a Java Spring Boot application organized with a clean layered architecture.
-
-Bien sûr ! C'est un aperçu de la structure de votre projet, souvent appelé "tree view" ou "directory structure". Pour qu'il s'affiche correctement dans votre README, vous pouvez l'encapsuler dans un bloc de code. Cela permet de conserver l'indentation et la lisibilité.
-
-Voici comment vous pouvez l'ajouter à votre README.md :
-
-Markdown
 
 ---
 
@@ -178,6 +180,7 @@ INSERT INTO books_authors (book_id, author_id) VALUES
 -- UserBooks
 INSERT INTO user_book_associations (user_id, book_id, status, rating, comment) VALUES
 (2, 254, 'FINISHED', 5, "I loved it !")
+```
 
 ## 🧪 Testing
 
