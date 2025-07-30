@@ -13,11 +13,14 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/genres")
 @RequiredArgsConstructor
 public class GenreController {
+    private static final Logger logger = LoggerFactory.getLogger(GenreController.class);
     private final GenreService genreService;
 
     @GetMapping
