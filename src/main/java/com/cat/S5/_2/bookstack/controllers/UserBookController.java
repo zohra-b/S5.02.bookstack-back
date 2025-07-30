@@ -73,4 +73,11 @@ public class UserBookController {
         userBookService.deleteUserBook(id);
         return ResponseEntity.ok(  bookTitle + " has succesfully been removed from your list") ;
     }
+
+    @GetMapping("/exists")
+    public ResponseEntity<Boolean> checkIfBookInUserList(@RequestParam Long userId, @RequestParam Long bookId) {
+        boolean exists = userBookService.checkIfBookInUserList(userId, bookId);
+        return ResponseEntity.ok(exists);
+    }
 }
+
