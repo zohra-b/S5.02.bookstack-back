@@ -18,12 +18,16 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.*;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleRoleEnumConversionError(MethodArgumentTypeMismatchException ex, WebRequest request){
+        logger.warn("MethodArgumentTypeMismatchException: invalid role parameter - {}", ex.getValue(), ex);
         String allowedRoles = Arrays.stream(UserRole.values())
                 .map(Enum::name)
                 .collect(Collectors.joining(", "));
@@ -39,6 +43,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(EntityNotFoundException ex, WebRequest request){
+        logger.info("EntityNotFoundException: {}", ex.getMessage(), ex);
         HttpStatus status = HttpStatus.NOT_FOUND;
         String msg = "Entity not found";
         String path = request.getDescription(false).replace("uri=", "");
@@ -50,6 +55,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex, WebRequest request) {
+        logger.warn("IllegalArgumentException: {}", ex.getMessage(), ex);
         HttpStatus status = HttpStatus.CONFLICT;
         String path = request.getDescription(false).replace("uri=", "");
 
@@ -60,6 +66,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<Object> handleTokenExpired(TokenExpiredException ex) {
+        logger.warn("TokenExpiredException: {}", ex.getMessage(), ex);
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", 401);
@@ -71,6 +78,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TokenMalformedJwtException.class)
     public ResponseEntity<Object> handleMalformedJwt(TokenMalformedJwtException ex) {
+        logger.warn("TokenMalformedJwtException: {}", ex.getMessage(), ex);
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", 401);
@@ -82,6 +90,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TokenSignatureException.class)
     public ResponseEntity<Object> handleSignatureException(TokenSignatureException ex) {
+        logger.warn("TokenSignatureException: {}", ex.getMessage(), ex);
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", 401);

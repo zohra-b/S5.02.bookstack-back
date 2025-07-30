@@ -14,11 +14,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/api/user-books")
 @RequiredArgsConstructor
 public class UserBookController {
-
+    private static final Logger logger = LoggerFactory.getLogger(UserBookController.class);
     private final UserBookService userBookService;
 
     @PostMapping
