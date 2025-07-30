@@ -137,6 +137,13 @@ public class UserBookService {
         userBookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("UserBook association not found with ID: " + id));
         userBookRepository.deleteById(id);
-
     }
+
+    @Transactional(readOnly = true)
+    public boolean checkIfBookInUserList(Long userId, Long bookId) {
+        return userBookRepository.existsByUserIdAndBookBookId(userId, bookId);
+    }
+
+
+
 }

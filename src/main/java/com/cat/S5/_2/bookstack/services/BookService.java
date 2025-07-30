@@ -88,72 +88,46 @@ public class BookService {
         return bookMapper.toBookDto(book);
     }
 
-//    public BookDto updateBook(Long id, UpdateBookDto dto) {
-//        logger.info("Updating book with id: {} and new title: {}", id, dto.title());
-//
-//        Book book = bookRepository.findById(id)
-//                .orElseThrow(() -> {
-//                    logger.error("Book not found with id: {}", id);
-//                    return new EntityNotFoundException("Book not found with id: " + id);
-//                });
-//
-//        updateIfNotNull(dto.title(), book::setTitle);
-//        updateIfNotNull(dto.description(), book::setDescription);
-//        updateIfNotNull(dto.publicationYear(), book::setPublicationYear);
-//        updateIfNotNull(dto.language(), book::setLanguage);
-//        updateIfNotNull(dto.imageUrl(), book::setImageUrl);
-//        updateIfNotNull(dto.isbn(), book::setIsbn);
-//
-//        if (dto.authorIds() != null) {
-//            logger.debug("Updating authors to IDs: {}", dto.authorIds());
-//            validateIdsExist(authorRepository, dto.authorIds(), "Author");
-//            updateAuthors(book, dto.authorIds());
-//        }
-//
-//        if (dto.genreIds() != null) {
-//            logger.debug("Updating genres to IDs: {}", dto.genreIds());
-//            validateIdsExist(genreRepository, dto.genreIds(), "Genre");
-//            updateGenres(book, dto.genreIds());
-//        }
-//
-//        bookMapper.updateEntityFromDto(dto, book);
-//
-//        Book updated = bookRepository.save(book);
-//        logger.info("Book updated successfully with id: {}", updated.getBookId());
-//
-//        return bookMapper.toBookDto(updated);
-//    }
+    public BookDto updateBook(Long id, UpdateBookDto dto) {
+        logger.info("Updating book with id: {} and new title: {}", id, dto.title());
 
-public BookDto updateBook(Long id, UpdateBookDto dto) {
-        logger.debug("Trying to update book with id {}",id);
-    Book book = bookRepository.findById(id)
-            .orElseThrow(() -> {
-                logger.error("Book not found with id: {}", id);
-                return new EntityNotFoundException("Book not found with id: " + id);
-            });
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Book not found with id: {}", id);
+                    return new EntityNotFoundException("Book not found with id: " + id);
+                });
 
-    if (dto.authorIds() != null) {
-        logger.debug("Updating authors with IDs: {}", dto.authorIds());
-        validateIdsExist(authorRepository, dto.authorIds(), "Author");
-        updateAuthors(book, dto.authorIds());
+        updateIfNotNull(dto.title(), book::setTitle);
+        updateIfNotNull(dto.description(), book::setDescription);
+        updateIfNotNull(dto.publicationYear(), book::setPublicationYear);
+        updateIfNotNull(dto.language(), book::setLanguage);
+        updateIfNotNull(dto.imageUrl(), book::setImageUrl);
+        updateIfNotNull(dto.isbn(), book::setIsbn);
+
+        if (dto.authorIds() != null) {
+            logger.debug("Updating authors with IDs: {}", dto.authorIds());
+            validateIdsExist(authorRepository, dto.authorIds(), "Author");
+            updateAuthors(book, dto.authorIds());
+        }
+
+        if (dto.genreIds() != null) {
+            logger.debug("Updating genres with IDs: {}", dto.genreIds());
+            validateIdsExist(genreRepository, dto.genreIds(), "Genre");
+            updateGenres(book, dto.genreIds());
+        }
+
+        // bookMapper.updateEntityFromDto(dto, book);
+
+        try {
+            Book updated = bookRepository.save(book);
+            logger.info("Book with id {} successfully updated", updated.getBookId());
+            return bookMapper.toBookDto(updated);
+        } catch (Exception e) {
+            logger.error("Failed to update book with id {}: {}", id, e.getMessage(), e);
+            throw e;
+        }
     }
 
-    if (dto.genreIds() != null) {
-        logger.debug("Updating genres with IDs: {}", dto.genreIds());
-        validateIdsExist(genreRepository, dto.genreIds(), "Genre");
-        updateGenres(book, dto.genreIds());
-    }
-
-    try {
-        Book updated = bookRepository.save(book);
-        logger.info("Book with id {} successfully updated", id);
-        return bookMapper.toBookDto(updated);
-    } catch (Exception e) {
-        logger.error("Failed to update book with id {}: {}", id, e.getMessage(), e);
-        throw e;
-    }
-
-}
 
     @Transactional(readOnly = true)
     public BookSummaryDto getBookSummary(Long id) {

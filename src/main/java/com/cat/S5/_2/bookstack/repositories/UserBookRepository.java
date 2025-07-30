@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface UserBookRepository extends JpaRepository<UserBook, Long> {
     List<UserBook> findByUser(User user);
     List<UserBook> findByBook(Book book);
-
+    boolean existsByUserIdAndBookBookId(Long userId, Long bookId);
     Optional<UserBook> findByUserAndBook(User user, Book book);
     List<UserBook> findByUserAndBook_TitleContainingIgnoreCase(User user, String title);
 
