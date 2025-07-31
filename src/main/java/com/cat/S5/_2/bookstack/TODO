@@ -1,14 +1,13 @@
 
- Service API Externe pour récupérer les métadonnées : dans un deuxieme temps
-
-
-
+Service API Externe pour récupérer les métadonnées : dans un deuxieme temps
 
 ----------------------------------------------------------------------------------------------------------------
 AUTH SERVICE : 22/07 : ok
 --------------------------
 Login : DECONNEXION : je n'ai pas de deconnexion dans le back ? c'est grave ?
 login : mot de passe oublié
+
+- Recuperación del password
 
 
 ----------------------------------------------------------------------------------------------------------------
@@ -17,11 +16,28 @@ createBook() ->
     - creation automatique du genre par le nom (recherche : si existe : ok, sinon, le crée)
     - creation auto des auteurs
 
+Calculer note moyenne de chaque livre
+Ajouter liste des commentaires pour chaque livre (avec eventuellemient lien à la liste de lecture de l'auteur du comment)
+
     -----------------------------------------------------
     AUHTOR ET GENRE
     ne pas pouvoir creer de doublons
 
     -------------------------------------------
-    USER BOOK CONTROLLER : autorisations à remettre
-    tri des userbook par genre et par note et par langue
+    USER-BOOK SERVICE AND CONTROLLER :
+    - autorisations à remettre dans le controller
+    - tri des userbook par genre et par note et par langue
+    - exporter les listes
+
+
+
+
+
+
+
+
+
+    Interacciones entre users (comentar, favoritos etc)
+
+
 
