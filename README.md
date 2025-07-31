@@ -1,6 +1,6 @@
 # BookStack - Backend API 📚
 
-Book tracking platform backend built with Spring Boot 3.5 and Java 21.
+Bookstack is a public-facing web application that allows users to track their reading progress, manage wishlists, rate books, and more. This repository contains the backend part of the application,  built with Spring Boot 3.5 and Java 21.
 
 ![Spring Boot](https://img.shields.io/badge/Spring%2520Boot-3.5.3-brightgreen)
 ![Java](https://img.shields.io/badge/Java-21-blue)
