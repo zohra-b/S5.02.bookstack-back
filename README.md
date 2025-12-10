@@ -8,6 +8,10 @@ Bookstack is a public-facing web application that allows users to track their re
 
 ---
 
+Take a look to [Deepwiki](https://deepwiki.com/zohra-b/S5.02.bookstack-back) to have a complete overview of the project.
+
+------
+
 ## 🚀 Quick Start
 
 ### Prerequisites
